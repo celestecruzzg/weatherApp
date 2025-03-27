@@ -176,7 +176,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
       {/* Login */}
       <div className="mt-4 text-center text-xs text-gray-600">
         <p>
-          ¿Aún no tienes cuenta?{" "}
+          ¿Ya tienes una cuenta?{" "}
           <button
             onClick={onSwitchToLogin}
             className="text-[var(--text-blue)] hover:underline font-medium cursor-pointer"

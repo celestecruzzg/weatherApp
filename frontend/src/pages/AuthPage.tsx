@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LoginForm } from '../components/auth/LoginForm';
 import { RegisterForm } from '../components/auth/RegisterFrom';
+import Footer from '../components/Footer';
 
 export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,9 +13,10 @@ export const AuthPage = () => {
       ) : (
         <RegisterForm onSwitchToLogin={() => setIsLogin(true)} />
       )}
-      <footer className="mt-8 text-center text-xs text-gray-500">
-        © 2025. LeaderCode - Todos los derechos reservados.
-      </footer>
+      <div className="absolute bottom-0 w-full py-4 px-16">
+        <div className="py-[0.1px] bg-[var(--color-blue)]"></div>
+        <Footer/>
+      </div>
     </div>
   );
 };
