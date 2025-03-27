@@ -1,190 +1,136 @@
-import { useEffect, useRef, useState } from 'react';
+// src/components/dashboard/Mapa.tsx
+import React, { useEffect, useState, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import axios from 'axios';
+import { fetchSensorData } from '../../services/api';
 
-// Configura tu token de Mapbox
 mapboxgl.accessToken = "pk.eyJ1IjoiY2VsZXN0ZWNydXp6ZyIsImEiOiJjbTI5MDluYW4wMDloMmxweWIwc3oxcDl3In0.UtROlXtGKA46QV57BFnqAQ";
 
 interface Parcela {
   id: number;
   nombre: string;
+  ubicacion: string;
+  responsable: string;
+  tipo_cultivo: string;
   latitud: number;
   longitud: number;
-  tipo_cultivo: string;
 }
 
-export default function Mapa() {
+const Mapa: React.FC = () => {
+  const [parcelas, setParcelas] = useState<Parcela[]>([]);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [parcelas, setParcelas] = useState<Parcela[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
-
-    const fetchParcelas = async () => {
+    const loadData = async () => {
       try {
-        // 1. Verificar conexión a internet
-        if (!navigator.onLine) {
-          throw new Error("No hay conexión a internet");
-        }
-
-        // 2. Realizar la petición a la API usando axios
-        const response = await axios.get('/iotapp/test')
-
-        
-        const data = response.data;
-        
-        if (!Array.isArray(data)) {
-          throw new Error("La respuesta no es un array válido");
-        }
-
-        setParcelas(data);
-        setLoading(false);
-
-        // 3. Inicializar el mapa solo si no existe
-        if (map.current) return;
-
-        map.current = new mapboxgl.Map({
-          container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/streets-v11',
-          center: [-99.1332, 19.4326], // Coordenadas de CDMX como fallback
-          zoom: 14
-        });
-
-        // Esperar a que el mapa esté listo
-        map.current.on('load', () => {
-          // 4. Añadir marcadores para cada parcela
-          data.forEach(parcela => {
-            // Validar coordenadas
-            if (isNaN(parcela.longitud) || isNaN(parcela.latitud)) {
-              console.warn(`Coordenadas inválidas para parcela ${parcela.id}`);
-              return;
-            }
-
-            // Crear elemento HTML personalizado para el marcador
-            const markerElement = document.createElement('div');
-            markerElement.className = 'custom-marker';
-            markerElement.innerHTML = `
-              <div class="marker-pin"></div>
-              <div class="marker-label">${parcela.nombre}</div>
-            `;
-
-            new mapboxgl.Marker(markerElement)
-              .setLngLat([parcela.longitud, parcela.latitud])
-              .setPopup(new mapboxgl.Popup({ offset: 25 })
-                .setHTML(`
-                  <h3 class="text-lg font-base">${parcela.nombre}</h3>
-                  <p class="text-sm">Cultivo: ${parcela.tipo_cultivo}</p>
-                `))
-              .addTo(map.current!);
-          });
-        });
-
-      } catch (err) {
-        console.error("Error:", err);
-        setError(err instanceof Error ? err.message : "Error desconocido");
-        setLoading(false);
+        const data = await fetchSensorData();
+        setParcelas(data.parcelas);
+      } catch (error) {
+        console.error('Error loading parcelas:', error);
       }
     };
 
-    fetchParcelas();
-
-    return () => {
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
-    };
+    loadData();
+    const interval = setInterval(loadData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Estilos CSS para los marcadores
   useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .custom-marker {
-        position: relative;
-        width: 40px;
-        height: 40px;
-      }
-      .marker-pin {
-        width: 30px;
-        height: 30px;
-        border-radius: 50% 50% 50% 0;
-        background: #3c82f6;
-        transform: rotate(-45deg);
-        position: absolute;
-        left: 5px;
-        top: 5px;
-      }
-      .marker-label {
-        position: absolute;
-        top: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-        background: #3c82f6;
-        padding: 2px 6px;
-        border-radius: 4px;
-        display: none;
-      }
-      .mapboxgl-marker:hover .marker-label {
-        display: block;
-      }
-    `;
-    document.head.appendChild(style);
+    if (!mapContainer.current || parcelas.length === 0) return;
+
+    if (!map.current) {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-86.88, 21.07],
+        zoom: 8,
+        attributionControl: false
+      });
+
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      
+      // Watermark minimalista
+      const watermark = document.createElement('div');
+      watermark.className = 'absolute bottom-1 right-1 text-xs text-gray-500';
+      watermark.innerHTML = '© Mapboxgl';
+      mapContainer.current.appendChild(watermark);
+    }
+
+    // Limpiar marcadores existentes
+    markers.current.forEach(marker => marker.remove());
+    markers.current = [];
+
+    // Crear nuevos marcadores con popups mejorados
+    parcelas.forEach(parcela => {
+      const popupContent = document.createElement('div');
+      popupContent.className = 'popup-container';
+      popupContent.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl overflow-hidden w-52">
+          <div class="bg-indigo-600 p-3">
+            <h3 class="text-white font-bold text-lg">${parcela.nombre}</h3>
+          </div>
+          <div class="p-3 space-y-2">
+            <div class="flex items-start">
+              <svg class="w-4 h-4 mt-0.5 mr-2 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span class="text-sm text-gray-700">${parcela.ubicacion}</span>
+            </div>
+            <div class="flex items-start">
+              <svg class="w-4 h-4 mt-0.5 mr-2 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <span class="text-sm text-gray-700">${parcela.responsable}</span>
+            </div>
+            <div class="flex items-start">
+              <svg class="w-4 h-4 mt-0.5 mr-2 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <span class="text-sm text-gray-700">${parcela.tipo_cultivo}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const popup = new mapboxgl.Popup({
+        offset: 25,
+        anchor: 'left',
+        className: 'mapbox-popup' // Clase para estilos adicionales
+      }).setDOMContent(popupContent);
+
+      const marker = new mapboxgl.Marker({
+        color: '#4F46E5',
+        scale: 0.9
+      })
+        .setLngLat([parcela.longitud, parcela.latitud])
+        .setPopup(popup)
+        .addTo(map.current!);
+      
+      markers.current.push(marker);
+    });
+
+    // Ajustar vista
+    if (parcelas.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      parcelas.forEach(parcela => bounds.extend([parcela.longitud, parcela.latitud]));
+      map.current.fitBounds(bounds, { padding: 50, maxZoom: 14 });
+    }
 
     return () => {
-      document.head.removeChild(style);
+      markers.current.forEach(marker => marker.remove());
     };
-  }, []);
-
-  if (error) {
-    return (
-      <div className="p-4 h-full">
-        <h2 className="text-lg text-[var(--text-black)] font-base mb-4">Ubicación de parcelas</h2>
-        <div className="flex items-center justify-center h-64 text-red-500">
-          <p>Error: {error}</p>
-        </div>
-      </div>
-    );
-  }
+  }, [parcelas]);
 
   return (
-    <div className="p-4 h-full">
-      <h2 className="text-lg font-base text-[var(--text-black)] mb-4">Ubicación de parcelas</h2>
-      {loading ? (
-        <div className="flex bg-white rounded-lg shadow-md items-center justify-center h-64">
-          <p className='text-[var(--text-black)]'>Cargando mapa...</p>
-        </div>
-      ) : (
-        <>
-          <div 
-            ref={mapContainer} 
-            className="h-96 rounded-md"
-            style={{ minHeight: '400px' }}
-          />
-          <div className="mt-4">
-            <h3 className="text-md font-medium mb-2">Parcelas registradas:</h3>
-            {parcelas.length > 0 ? (
-              <ul className="grid grid-cols-2 gap-2">
-                {parcelas.map(parcela => (
-                  <li key={parcela.id} className="bg-gray-50 p-2 rounded">
-                    <strong>{parcela.nombre}</strong> - {parcela.tipo_cultivo}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No se encontraron parcelas</p>
-            )}
-          </div>
-        </>
-      )}
-    </div>
+    <div 
+      ref={mapContainer} 
+      className="w-full h-full rounded-lg shadow-md bg-gray-50"
+      style={{ minHeight: '300px' }}
+    />
   );
-}
+};
+
+export default Mapa;

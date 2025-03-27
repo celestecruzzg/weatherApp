@@ -12,3 +12,37 @@
 * {
   font-family: 'Poppins', sans-serif;
 }
+
+/* Estilos para los popups */
+.mapboxgl-popup {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  border-radius: 0.5rem !important;
+}
+
+.mapboxgl-popup-tip {
+  display: none !important;
+}
+
+/* Flecha personalizada */
+.mapboxgl-popup:after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #4F46E5;
+}
+
+/* Ocultar controles no deseados */
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib {
+  display: none !important;
+}
