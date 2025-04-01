@@ -4,7 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardIndex from "./pages/DashboardIndex";
 import { AuthPage } from "./pages/AuthPage";
 import Parcelas from "./pages/Parcelas";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./assets/Layouts/ProtectedRoute";
 import Historial from "./pages/Historial";
 import { ThemeProvider, createTheme } from '@mui/material/styles';  // Importar ThemeProvider y createTheme
 

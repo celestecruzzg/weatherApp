@@ -35,7 +35,7 @@ const Mapa: React.FC = () => {
         }
 
         console.log('Token found, fetching parcelas data...');
-        const data = await sensorService.getParcelas();
+        const data = await sensorService.getParcelasAPI();
         console.log('Received parcelas data:', data);
         
         if (data && data.success && data.parcelas) {

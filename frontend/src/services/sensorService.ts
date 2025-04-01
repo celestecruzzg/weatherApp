@@ -41,6 +41,20 @@ export const sensorService = {
     }
   },
 
+  //en caso de q el mapa deba tener los pines por el api y no por lo regitsrado en la bd
+  async getParcelasAPI() {
+    try {
+      console.log('Fetching parcelas data...');
+      const response = await api.get('/sensors/parcelasAPI');
+      console.log('Response from getParcelasAPI:', response.data);
+      return response.data;
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      console.error('Error in getParcelasAPI:', apiError);
+      throw apiError.response?.data?.message || 'Error al obtener datos de parcelas';
+    }
+  },
+
   async getGeneralHistory() {
     try {
       console.log('Fetching general history...');

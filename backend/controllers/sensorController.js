@@ -342,21 +342,52 @@ class SensorController {
     }
   }
 
+  async getParcelasAPI(req, res) {
+    try {
+      console.log('Fetching data from external API...');
+      
+      // Llamada a la API externa
+      const response = await axios.get('https://moriahmkt.com/iotapp/test/');
+      console.log('External API response:', JSON.stringify(response.data, null, 2));
+      
+      // Verificar que los datos de parcelas existan
+      if (!response.data || !response.data.parcelas) {
+        throw new Error('No parcelas data found in the API response');
+      }
+
+      const parcelas = response.data.parcelas;
+
+      res.json({
+        success: true,
+        message: 'Datos de parcelas obtenidos correctamente',
+        parcelas: parcelas
+      });
+
+    } catch (error) {
+      console.error('Error en getParcelasAPI:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al obtener datos de parcelas de la API',
+        error: error.message
+      });
+    }
+  }
+
   async getParcelas(req, res) {
     let connection;
     try {
       connection = await pool.getConnection();
       
-      // Obtener todas las parcelas con sus últimos datos de sensores
+      // últimos datos de los sensores
       const [parcelas] = await connection.query(
         `SELECT p.*, s.humedad, s.temperatura, s.lluvia, s.sol
-         FROM parcelas p
-         LEFT JOIN sensores s ON p.id = s.parcela_id
-         WHERE s.id IN (
-           SELECT MAX(id)
-           FROM sensores
-           GROUP BY parcela_id
-         )`
+          FROM parcelas p
+          LEFT JOIN sensores s ON p.id = s.parcela_id
+          WHERE s.id IN (
+            SELECT MAX(id)
+            FROM sensores
+            GROUP BY parcela_id
+          )`
       );
       
       res.json({

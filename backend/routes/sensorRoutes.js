@@ -127,4 +127,20 @@ router.get('/history/parcelas-eliminadas', authMiddleware, sensorController.getP
  */
 router.get('/parcelas', authMiddleware, sensorController.getParcelas);
 
+/**
+@swagger
+ * /api/sensors/parcelasAPI:
+ *   get:
+ *     summary: Obtiene todas las parcelas de la API
+ *     tags: [Sensors]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Parcelas obtenidas correctamente
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('/parcelasAPI', authMiddleware, sensorController.getParcelasAPI);
+
 module.exports = router;
