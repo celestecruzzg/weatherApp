@@ -75,7 +75,7 @@ const LineChart: React.FC = () => {
     loadData();
 
     // Actualizar cada minuto
-    const interval = setInterval(loadData, 60 * 1000);
+    const interval = setInterval(loadData, 60 * 3000000);
     return () => clearInterval(interval);
   }, []);
 
@@ -197,9 +197,9 @@ const LineChart: React.FC = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-3 p-3">
-        <h3 className="text-[14px] font-semibold text-[var(--text-black)]">
-          Evolución de temperatura y humedad
-        </h3>
+      <h2 className="text-[18px] font-semibold text-[var(--text-black)]">
+          Evolución de temperatura y humedad<br></br> (por cada actualización)
+        </h2>
       </div>
       <div className="flex-1">
         <Line data={data} options={options} />

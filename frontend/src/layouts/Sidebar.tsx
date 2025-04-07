@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DashboardIcon, TrashIcon, HamburgerMenuIcon } from '@radix-ui/react-icons';
-import Logo from '../../assets/icons/logo.svg';
+import Logo from '../assets/icons/logo.svg';
 import { NavLink } from 'react-router-dom';
 
 export default function Sidebar() {

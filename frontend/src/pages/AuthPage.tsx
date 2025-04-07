@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LoginForm } from '../components/auth/LoginForm';
 import { RegisterForm } from '../components/auth/RegisterFrom';
-import Footer from '../assets/Layouts/Footer';
+import Footer from '../Layouts/Footer';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 

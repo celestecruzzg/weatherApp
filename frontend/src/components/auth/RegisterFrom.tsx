@@ -26,7 +26,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
   // Expresiones regulares
   const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
   const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const regexPassword = /^.{6,}$/;
+  const regexPassword = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,7 +42,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
     }
 
     if (name === "contraseña") {
-      setErrors(prev => ({ ...prev, contraseña: regexPassword.test(value) ? "" : "Debe tener al menos 6 caracteres" }));
+      setErrors(prev => ({ ...prev, contraseña: regexPassword.test(value) ? "" : "Debe tener al menos 6 caracteres, una mayúscula y un carácter especial" }));
     }
   };
 
@@ -75,6 +75,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
       toast.dismiss();
       if (response.success) {
         toast.success("Registro exitoso 🎉");
+        onSwitchToLogin();
         console.log("Registro con:", formData);
       } else {
         toast.error(response.message || "Error al registrar cuenta");

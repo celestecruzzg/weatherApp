@@ -1,10 +1,10 @@
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // Asegúrate de importar el contexto
-import Avatar from '../../assets/images/image.png'
+import { useAuth } from '../context/AuthContext'; // Asegúrate de importar el contexto
+import Avatar from '../assets/images/image.png'
 import { CiLogout } from 'react-icons/ci';
-import { authService } from '../../services/authService';
+import { authService } from '../services/authService';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);

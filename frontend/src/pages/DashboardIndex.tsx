@@ -92,8 +92,8 @@ export default function DashboardIndex() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow p-4 h-full">
-            <h2 className="text-lg font-base text-[var(--text-black)] mb-4">Mapa de Parcelas</h2>
-            <div className="h-96">
+            <h2 className="text-lg font-base text-[var(--text-black)] mb-4">Mapa de parcelas</h2>
+            <div className="h-[480px]">
               <Mapa />
             </div>
           </div>
@@ -107,17 +107,21 @@ export default function DashboardIndex() {
       </div>
       
       {/* Sección de Gráficas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <LineChart />
+
+      <section>
+        <h2 className="text-2xl text-[var(--text-black)] font-bold mt-10 mb-6">Gráficas y métricas de los sensores</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow p-4">
+            <LineChart />
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <BarChart />
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <RadarChart />
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <BarChart />
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <RadarChart />
-        </div>
-      </div>
+      </section>
 
       <footer className="text-center text-xs text-gray-500 mt-8">
         © 2025. LeaderCode - Todos los derechos reservados.

@@ -33,7 +33,7 @@ interface RegisterData {
   correo: string;
   contraseña: string;
   pregunta_seguridad: string;
-  respuesta_seguridad: string;
+  //respuesta_seguridad: string;
 }
 
 interface ApiError {

@@ -31,8 +31,8 @@ const RadarChart: React.FC = () => {
   const [weatherAnalysis, setWeatherAnalysis] = useState<WeatherAnalysis | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
 
-  const analyzeWeather = (reading: { temperatura: number, humedad: number, lluvia: number, sol: number }): WeatherAnalysis => {
-    const { temperatura, humedad, lluvia, sol } = reading;
+  const analyzeWeather = (reading: { temperatura: number, humedad: number, lluvia: number }): WeatherAnalysis => {
+    const { temperatura, humedad, lluvia } = reading;
 
     if (temperatura >= 30) {
       return humedad >= 70 
@@ -50,22 +50,19 @@ const RadarChart: React.FC = () => {
         : { description: "Lluvia ligera", icon: "🌦️", color: "text-blue-500" };
     }
 
-    if (sol >= 80) return { description: "Muy soleado", icon: "☀️", color: "text-yellow-500" };
-    if (sol <= 20) return { description: "Nublado", icon: "☁️", color: "text-gray-500" };
-
     return { description: "Condiciones estables", icon: "🌤️", color: "text-green-500" };
   };
 
   useEffect(() => {
     const handleDataUpdate = (event: CustomEvent) => {
-      const { humedad, temperatura, lluvia, sol, lastUpdated } = event.detail;
+      const { humedad, temperatura, lluvia, lastUpdated } = event.detail;
       
       setChartData({
-        labels: ['Temperatura', 'Humedad', 'Lluvia', 'Radiación Solar'],
+        labels: ['Temperatura', 'Humedad', 'Lluvia'],
         datasets: [
           {
             label: 'Valores Actuales',
-            data: [temperatura, humedad, lluvia, sol],
+            data: [temperatura, humedad, lluvia ],
             backgroundColor: 'rgba(59, 130, 246, 0.2)',
             borderColor: '#3B82F6',
             borderWidth: 2,
@@ -77,7 +74,7 @@ const RadarChart: React.FC = () => {
         ],
       });
 
-      setWeatherAnalysis(analyzeWeather({ temperatura, humedad, lluvia, sol }));
+      setWeatherAnalysis(analyzeWeather({ temperatura, humedad, lluvia }));
       setLastUpdated(lastUpdated);
     };
 
@@ -95,8 +92,8 @@ const RadarChart: React.FC = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-3 p-3">
-        <h2 className="text-[14px] font-semibold text-[var(--text-black)]">
-          Análisis climático actual
+        <h2 className="text-[18px] font-semibold text-[var(--text-black)]">
+          Análisis climático actual con relación a lluvia, humedad y temperatura
         </h2>
         <span className="text-xs text-gray-500">{lastUpdated}</span>
       </div>
@@ -141,7 +138,7 @@ const RadarChart: React.FC = () => {
                     if (context.parsed.r !== null) {
                       label += context.parsed.r.toFixed(1) + 
                         (context.label === 'Temperatura' ? '°C' : 
-                         context.label === 'Humedad' || context.label === 'Radiación Solar' ? '%' : 'mm');
+                         context.label === 'Humedad' || context.label === 'Radiación ar' ? '%' : 'mm');
                     }
                     return label;
                   },

@@ -15,7 +15,7 @@ class SensorController {
       
       // Obtener datos de la API externa
       console.log('Fetching data from external API...');
-      const response = await axios.get('https://moriahmkt.com/iotapp/test/');
+      const response = await axios.get('https://moriahmkt.com/iotapp/updated/');
       console.log('External API response:', JSON.stringify(response.data, null, 2));
 
       if (!response.data || !response.data.sensores || !response.data.parcelas) {
@@ -242,7 +242,7 @@ class SensorController {
       // Primero obtener los datos actuales de la API
       let currentData = null;
       try {
-        const response = await axios.get('https://moriahmkt.com/iotapp/test/');
+        const response = await axios.get('https://moriahmkt.com/iotapp/updated/');
         if (response.data && response.data.sensores) {
           currentData = response.data.sensores;
         }
@@ -313,7 +313,7 @@ class SensorController {
       connection = await pool.getConnection();
       
       // Obtener datos actuales de la API
-      const response = await axios.get('https://moriahmkt.com/iotapp/test/');
+      const response = await axios.get('https://moriahmkt.com/iotapp/updated/');
       const currentParcelas = response.data.parcelas || [];
       const currentIds = currentParcelas.map(p => p.id);
       
@@ -347,7 +347,7 @@ class SensorController {
       console.log('Fetching data from external API...');
       
       // Llamada a la API externa
-      const response = await axios.get('https://moriahmkt.com/iotapp/test/');
+      const response = await axios.get('https://moriahmkt.com/iotapp/updated/');
       console.log('External API response:', JSON.stringify(response.data, null, 2));
       
       // Verificar que los datos de parcelas existan

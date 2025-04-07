@@ -146,7 +146,7 @@ const BarChart: React.FC = () => {
   useEffect(() => {
     fetchData();
     
-    const interval = setInterval(fetchData, 30000); // Actualizar cada 30 segundos
+    const interval = setInterval(fetchData, 3000000); // Actualizar cada 30 segundos
     
     return () => clearInterval(interval);
   }, []);
@@ -184,7 +184,9 @@ const BarChart: React.FC = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold">Valores máximos y mínimos</h2>
+      <h2 className="text-[18px] font-semibold text-[var(--text-black)]">
+          Valores máximos y mínimos generales de los sensores
+        </h2>
       </div>
       <div className="flex-1 min-h-[400px] p-4">
         <Bar 
